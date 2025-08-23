@@ -43,6 +43,6 @@ async def refresh_ip_loop(app):
     global old_ip, notify_refresh_ip
     while True:
         if notify_refresh_ip:
-            # bisa dipanggil get_all_modems() dari core.modem
+            # TODO: implement refresh ip notif pakai get_all_modems()
             pass
         await asyncio.sleep(30)
