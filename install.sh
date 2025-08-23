@@ -1,19 +1,19 @@
 #!/bin/sh
-# Installer OpenWrt TeleMonitor
+# Installer OpenWrt TeleMonitor (versi modular final)
 # Developer: @nodexservice
 
 echo "🚀 Instalasi OpenWrt TeleMonitor"
 
-# 1. Install dependency
+# === 1. Install dependency ===
 echo "👉 Menginstall dependency..."
 opkg update
 opkg install python3 python3-pip git-core ca-certificates
 
-# 2. Install python-telegram-bot
+# === 2. Install python-telegram-bot ===
 pip3 install --upgrade pip
 pip3 install python-telegram-bot --break-system-packages
 
-# 3. Input config
+# === 3. Input interaktif ===
 echo "👉 Masukkan BOT TOKEN:"
 read BOT_TOKEN
 echo "👉 Masukkan CHAT ID admin (pisahkan dengan koma jika lebih dari satu):"
@@ -26,7 +26,7 @@ read SCAN_INTERVAL
 CHAT_IDS_JSON=$(echo "$CHAT_IDS" | sed 's/,/","/g')
 CHAT_IDS_JSON="[$(echo "\"$CHAT_IDS_JSON\"")]"
 
-# 4. Buat config.json
+# === 4. Generate config.json ===
 cat > config.json <<EOF
 {
   "bot_token": "$BOT_TOKEN",
@@ -35,15 +35,15 @@ cat > config.json <<EOF
 }
 EOF
 
-# 5. Buat devices.json kosong
+# === 5. Buat devices.json kosong ===
 if [ ! -f devices.json ]; then
   echo "{}" > devices.json
 fi
 
-# 6. Buat folder backup
+# === 6. Buat folder backup ===
 mkdir -p backup
 
-# 7. Buat init script
+# === 7. Buat init script untuk bot ===
 INIT_FILE="/etc/init.d/telemon"
 cat > $INIT_FILE <<'EOL'
 #!/bin/sh /etc/rc.common
@@ -64,7 +64,7 @@ start_service() {
 EOL
 chmod +x $INIT_FILE
 
-# 8. Enable service
+# === 8. Enable service ===
 /etc/init.d/telemon enable
 
 echo "✅ Instalasi selesai!"
