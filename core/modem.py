@@ -2,16 +2,22 @@ import subprocess, json, logging
 
 def get_all_modems():
     try:
-        data = subprocess.check_output(["ubus", "call", "network.interface", "dump"], text=True)
-        info = json.loads(data)
-        candidates = []
-        for iface in info.get("interface", []):
-            if iface.get("up") and "ipv4-address" in iface and iface["ipv4-address"]:
-                candidates.append(iface)
-        return candidates
+        dump = subprocess.check_output(["ubus", "call", "network.interface", "dump"], text=True)
+        data = json.loads(dump)
+        all_ifaces = {i['interface']: i for i in data['interface']}
+
+        fw = subprocess.check_output("uci show firewall | grep network", shell=True, text=True)
+        wan_ifaces = []
+        for line in fw.splitlines():
+            if ".network=" in line and "wan" in line:
+                nets = line.split("=")[1].strip("'").split()
+                wan_ifaces.extend(nets)
+
+        modems = {name: all_ifaces[name] for name in wan_ifaces if name in all_ifaces}
+        return modems
     except Exception as e:
         logging.error("Error get_all_modems: %s", e)
-    return []
+    return {}
 
 def get_device_stats(dev_name):
     try:
