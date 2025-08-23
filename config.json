@@ -1,0 +1,5 @@
+{
+  "bot_token": "ISI_TOKEN_BOT_ANDA",
+  "chat_ids": ["123456789"], 
+  "scan_interval": 15
+}
