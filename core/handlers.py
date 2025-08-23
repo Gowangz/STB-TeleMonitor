@@ -80,7 +80,8 @@ async def list_active(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = "<b>📡 Perangkat Aktif</b>\n<i>Daftar perangkat yang sedang terhubung:</i>"
     keyboard = []
     for mac in devices:
-        label = get_device_name(mac)
+        host = info.get(mac, {}).get("hostname", None)
+        label = host if host and host != "TIDAK DIKETAHUI" else "UNKNOWN"
         keyboard.append([InlineKeyboardButton(label, callback_data=f"detail:{mac}")])
     keyboard.append([InlineKeyboardButton("⬅️ Kembali", callback_data="daftar_perangkat_menu")])
     await q.edit_message_text(msg, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(keyboard))
@@ -95,7 +96,9 @@ async def list_registered(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = "<b>📂 Perangkat Terdaftar</b>\n<i>Semua perangkat yang pernah diregistrasi:</i>"
     keyboard = []
     for mac, data in DEVICES.items():
-        label = data['name']
+        label = data.get("name")
+        if not label or label.strip() == "":
+            label = data.get("hostname", "UNKNOWN")
         keyboard.append([InlineKeyboardButton(label, callback_data=f"detail:{mac}")])
     keyboard.append([InlineKeyboardButton("⬅️ Kembali", callback_data="daftar_perangkat_menu")])
     await q.edit_message_text(msg, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(keyboard))
@@ -112,7 +115,8 @@ async def list_unregistered(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     msg = "<b>🆕 Perangkat Belum Terdaftar</b>\n<i>Pilih salah satu untuk detail:</i>"
     keyboard = []
     for mac in unregistered:
-        label = info.get(mac, {}).get("hostname", mac)
+        host = info.get(mac, {}).get("hostname", None)
+        label = host if host and host != "TIDAK DIKETAHUI" else "UNKNOWN"
         keyboard.append([InlineKeyboardButton(label, callback_data=f"regdetail:{mac}")])
     keyboard.append([InlineKeyboardButton("⬅️ Kembali", callback_data="daftar_perangkat_menu")])
     await q.edit_message_text(msg, parse_mode="HTML", reply_markup=InlineKeyboardMarkup(keyboard))
