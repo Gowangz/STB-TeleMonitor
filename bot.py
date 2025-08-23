@@ -5,7 +5,6 @@ import asyncio, logging, json
 from telegram.ext import Application
 from core import handlers, loops
 
-# Load config
 CONFIG_FILE = "config.json"
 with open(CONFIG_FILE) as f:
     CONFIG = json.load(f)
@@ -23,11 +22,8 @@ def main():
     logging.getLogger("").addHandler(logging.StreamHandler())
 
     app = Application.builder().token(BOT_TOKEN).build()
-
-    # Register handlers
     handlers.register(app)
 
-    # Start loops
     asyncio.get_event_loop().create_task(loops.auto_scan_loop(app))
     asyncio.get_event_loop().create_task(loops.refresh_ip_loop(app))
 
